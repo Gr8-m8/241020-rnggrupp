@@ -128,18 +128,19 @@ class GroupGenerator:
         self.group_size = data['size']
 
     def help(self, args = None):
-        for command in self.commands:
+        commands = self.commands
+        for command in commands:
             print(f"{text.CYAN}{command[self.KEY_DESC]}: {text.BLUE}{command[self.KEY_COMMAND]} {text.GREEN}{command[self.KEY_HELP]}{text.END}")
         print()
     
     commands = [
-        [qlist, ['list','l', '='], "List", "List all attributes"],
-        [add, ['add','+','a'], "Add Person", "Add Person to List"],
-        [remove, ['remove','-','r'], "Remove Person", "Remove Person from List"],
-        [sizeset, ['size','s'], "Set Group Size", "Set Size of generated groups"],
+        [qlist, ['list','l', '='], "List", "Lists List and Size"],
+        [add, ['add','+','a'], "Add Person", "Add Person to List [PERSON, PERSON, PERSON...]"],
+        [remove, ['remove','-','r'], "Remove Person", "Remove Person from List [PERSON, PERSON, PERSON...]"],
+        [sizeset, ['size','s'], "Set Group Size", "Set Size for generated groups [SIZE]"],
         [gengroup, ['gen','*','g'], "Generate Group List", "Generate groups by List and Size"],
-        [save, ['save'], "Save instance", "Save current List and Size to File"],
-        [load, ['load'], "Load instance", "Load List and Size from File"],
+        [save, ['save'], "Save instance", "Save current List and Size to File [FILENAME]"],
+        [load, ['load'], "Load instance", "Load List and Size from File [FILENAME]"],
         [qexit, ['exit','x','e'], "Exit", "Exit Application"],
         [help, ['help','?','h'], "Help", "Display Commands"],
     ]
@@ -149,13 +150,14 @@ class GroupGenerator:
         while (main_loop_active):
             
             for command in self.commands:
-                print(f"{text.CYAN}[{command[self.KEY_COMMAND][0]}] {text.BLUE}{command[self.KEY_DESC]}{text.END}")
+                #print(f"{text.CYAN}[{command[self.KEY_COMMAND][0]}] {text.BLUE}{command[self.KEY_DESC]}{text.END}")
+                print(f"{text.CYAN}[{self.commands.index(command)}] {text.BLUE}{command[self.KEY_DESC]}{text.END}")
 
             qinput = input(f"{text.YELLOW}> "); print(text.END)
             qinput = qinput.split(' ')
 
             for command in self.commands:
-                if qinput[0] in command[self.KEY_COMMAND]:
+                if qinput[0] in command[self.KEY_COMMAND] or qinput[0] == str(self.commands.index(command)):
                     command[self.KEY_FUNC](self, qinput[1:])
 
 gr = GroupGenerator()
