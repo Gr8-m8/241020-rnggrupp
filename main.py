@@ -1,3 +1,4 @@
+from saver import Saver
 import random
 
 class text:
@@ -28,7 +29,8 @@ class text:
 
 class GroupGenerator:
     def __init__(self) -> None:
-        
+        self.saver = Saver()
+
         self.entries = []
         self.group_size = 1
         self.groups = []
@@ -81,7 +83,8 @@ class GroupGenerator:
     def gengroup(self, args = None):
         print(f"{text.CYAN}Generate:{text.END}")
         groups = []
-        entries = self.entries
+        entries = self.entries.copy()
+        
         for i in range(len(entries)%self.group_size):
             entries.append(None)
         while len(entries)>=self.group_size or self.group_size == 0:
@@ -105,6 +108,26 @@ class GroupGenerator:
         print(f"{text.PURPLE}Exit:{text.END}")
         exit(0)
 
+    def save(self, args):
+        qinput = None
+        if not args:
+            qinput = f"{input("Set File Name\n> ")}"
+        else:
+            qinput = f"{args[0]}"
+        
+        self.saver.save(f"{qinput}.json", {"size": self.group_size, "entries": self.entries})
+
+    def load(self, args):
+        qinput = None
+        if not args:
+            qinput = f"{input("Get File Name\n> ")}"
+        else:
+            qinput = f"{args[0]}"
+
+        data = self.saver.load(f"{qinput}.json")
+        self.entries = data['entries']
+        self.group_size = data['size']
+
     def main(self):
 
         commands = [
@@ -113,6 +136,8 @@ class GroupGenerator:
             [self.remove, ['remove','-','r'], "Remove Person"],
             [self.sizeset, ['size','s'], "Set Group Size"],
             [self.gengroup, ['gen','*','g'], "Generate Group List"],
+            [self.save, ['save'], "Save instance"],
+            [self.load, ['load'], "Load instance"],
             [self.qexit, ['exit','x','e'], "Exit"],
         ]
         
