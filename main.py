@@ -38,6 +38,7 @@ class GroupGenerator:
     KEY_FUNC = 0
     KEY_COMMAND = 1
     KEY_DESC = 2
+    KEY_HELP = 3
 
 
     def add(self, args = None):
@@ -88,8 +89,8 @@ class GroupGenerator:
         while len(entries)>=self.group_size or self.group_size == 0:
             group = random.sample(entries, self.group_size)
             groups.append(group)
-            for entry in group:
-                entries.remove(entry)
+            [entries.remove(entry) for entry in group]
+                
             print(f"\t{text.BLUE}{group}{text.END}")
         
         print(f"{text.RED}Rest group:\n\t{text.BLUE}{entries}{text.END}")
@@ -106,7 +107,7 @@ class GroupGenerator:
         print(f"{text.PURPLE}Exit:{text.END}")
         exit(0)
 
-    def save(self, args):
+    def save(self, args = None):
         qinput = None
         if not args:
             qinput = f"{input("Set File Name\n> ")}"
@@ -115,7 +116,7 @@ class GroupGenerator:
         
         self.saver.save(f"{qinput}.json", {"size": self.group_size, "entries": self.entries})
 
-    def load(self, args):
+    def load(self, args = None):
         qinput = None
         if not args:
             qinput = f"{input("Get File Name\n> ")}"
@@ -126,31 +127,36 @@ class GroupGenerator:
         self.entries = data['entries']
         self.group_size = data['size']
 
-    def main(self):
+    def help(self, args = None):
+        for command in self.commands:
+            print(f"{text.CYAN}{command[self.KEY_DESC]}: {text.BLUE}{command[self.KEY_COMMAND]} {text.GREEN}{command[self.KEY_HELP]}{text.END}")
+        print()
+    
+    commands = [
+        [qlist, ['list','l', '='], "List", "List all attributes"],
+        [add, ['add','+','a'], "Add Person", "Add Person to List"],
+        [remove, ['remove','-','r'], "Remove Person", "Remove Person from List"],
+        [sizeset, ['size','s'], "Set Group Size", "Set Size of generated groups"],
+        [gengroup, ['gen','*','g'], "Generate Group List", "Generate groups by List and Size"],
+        [save, ['save'], "Save instance", "Save current List and Size to File"],
+        [load, ['load'], "Load instance", "Load List and Size from File"],
+        [qexit, ['exit','x','e'], "Exit", "Exit Application"],
+        [help, ['help','?','h'], "Help", "Display Commands"],
+    ]
 
-        commands = [
-            [self.qlist, ['list','l', '='], "List"],
-            [self.add, ['add','+','a'], "Add Person"],
-            [self.remove, ['remove','-','r'], "Remove Person"],
-            [self.sizeset, ['size','s'], "Set Group Size"],
-            [self.gengroup, ['gen','*','g'], "Generate Group List"],
-            [self.save, ['save'], "Save instance"],
-            [self.load, ['load'], "Load instance"],
-            [self.qexit, ['exit','x','e'], "Exit"],
-        ]
-        
+    def main(self):
         main_loop_active = True
         while (main_loop_active):
             
-            for command in commands:
+            for command in self.commands:
                 print(f"{text.CYAN}[{command[self.KEY_COMMAND][0]}] {text.BLUE}{command[self.KEY_DESC]}{text.END}")
 
             qinput = input(f"{text.YELLOW}> "); print(text.END)
             qinput = qinput.split(' ')
 
-            for command in commands:
+            for command in self.commands:
                 if qinput[0] in command[self.KEY_COMMAND]:
-                    command[self.KEY_FUNC](qinput[1:])
+                    command[self.KEY_FUNC](self, qinput[1:])
 
 gr = GroupGenerator()
 try:
