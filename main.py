@@ -1,5 +1,6 @@
 from saver import Saver
 import random
+from datetime import datetime
 
 class text:
     #console text decoration codes
@@ -97,6 +98,8 @@ class GroupGenerator:
 
         if not len(groups)>0:
             print(f"{text.RED}No one is in groups{text.END}")
+
+        self.saver.save(f"result {datetime.now().strftime('%Y-%m-%d_[%H-%M-%S]')}.json", {"groups": groups, "Rest Group": entries})
     
     def qlist(self, args = None):
         print(f"{text.CYAN}List:{text.END}")
