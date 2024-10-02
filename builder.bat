@@ -1,0 +1,1 @@
+py -m PyInstaller --onefile main.py -n "GroupRNG" --collect-submodules "saver.py"
