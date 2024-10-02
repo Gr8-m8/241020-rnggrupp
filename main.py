@@ -85,8 +85,6 @@ class GroupGenerator:
         groups = []
         entries = self.entries.copy()
         
-        for i in range(len(entries)%self.group_size):
-            entries.append(None)
         while len(entries)>=self.group_size or self.group_size == 0:
             group = random.sample(entries, self.group_size)
             groups.append(group)
