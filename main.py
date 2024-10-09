@@ -29,7 +29,7 @@ class text:
     END = '\033[0m'
 
 class Command:
-    def __init__(self, func: function, command: list, desc: str, help: str) -> None:
+    def __init__(self, func, command: list, desc: str, help: str) -> None:
         self.func = func
         self.command = command
         self.desc = desc
@@ -43,12 +43,6 @@ class GroupGenerator:
         self.group_size = 1
         self.groups = [],[]
 
-    KEY_FUNC = 0
-    KEY_COMMAND = 1
-    KEY_DESC = 2
-    KEY_HELP = 3
-
-
     def add(self, args = []) -> str:
         retur = ""
         for name in args:
@@ -60,15 +54,19 @@ class GroupGenerator:
 
     def remove(self, args = []) -> str:
         retur = ""
+        returNO = ""
         if args[0] in ['all']:
                 self.entries = []
                 return 'All'
 
         for name in args:
-            self.entries.remove(name)
-            retur+=f"{name} "
+            if name in self.entries:
+                self.entries.remove(name)
+                retur+=f"{name} "
+            else:
+                returNO+=f"{name} "
 
-        return retur
+        return retur, returNO
 
     def sizeset(self, args = 2) -> int:
         try:
@@ -98,8 +96,8 @@ class GroupGenerator:
         return self.entries, self.group_size, self.groups
 
     def save(self, args = datetime.now().strftime('%Y-%m-%d [%H-%M-%S]')) -> str:
-        if args[0]:
-            name = f"{args[0]}.json"
+        if args:
+            name = f"{args}.json"
             content = {"size": self.group_size, "entries": self.entries}
             self.saver.save(name, content)
             return name
@@ -108,13 +106,16 @@ class GroupGenerator:
 
     def load(self, args = None) -> str:
         if args:
-            name = f"{args[0]}.json"
+            name = f"{args}.json"
             data = self.saver.load(name)
-            self.entries = data['entries']
-            self.group_size = data['size']
-            return name, {self.entries, self.group_size}
+            if data:
+                self.entries = data['entries']
+                self.group_size = data['size']
+            else:
+                return name, (None, None)
+            return name, (self.entries, self.group_size)
         else:
-            return None
+            return None, (None, None)
 
 class gui:
     def __init__(self, groupgenerator: GroupGenerator) -> None:
@@ -133,7 +134,7 @@ class gui:
 
             for command in self.commands:
                 if qinput[0] in command.command or qinput[0] == str(self.commands.index(command)):
-                    command[self.commands](self, qinput[1:])
+                    command.func(self, qinput[1:])
 
     def add(self, args = None):
         print(f"{text.CYAN}Add:{text.END}")
@@ -154,9 +155,14 @@ class gui:
         else:
             names_in = args
 
-        names_out = self.gg.remove(names_in)
+        names_out, namesNo_out = self.gg.remove(names_in)
         for name in names_out.split(' '):
             print(f"\t{text.BLUE}{name}{text.END}")
+
+        if namesNo_out != "" and len(namesNo_out.split(' '))>0:
+            print(f"{text.RED}Names are not in list")
+            for name in namesNo_out.split(' '):
+                print(f"\t{text.RED}{name}{text.END}")
 
     def sizeset(self, args = None):
         print(f"{text.CYAN}Size:{text.END}")
@@ -177,14 +183,14 @@ class gui:
         
         if groups:
             for group in groups:
-                print(f"\t{text.BLUE}{group}{text.END}")
+                print(f"\tGroup {groups.index(group)}:{text.BLUE}{group}{text.END}")
         else:
             print(f"No groups generated")
         
         print(f"{text.RED}Rest group:\n\t{text.BLUE}{entries}{text.END}")
     
     def qlist(self, args = None):
-        entries, group_size = self.gg.qlist()
+        entries, group_size, groups = self.gg.qlist()
         print(f"{text.CYAN}List:{text.END}")
         print(f"\t{text.BLUE}{entries}{text.END}")
         print(f"\t{text.BLUE}{group_size}{text.END}")
