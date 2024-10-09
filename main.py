@@ -28,19 +28,105 @@ class text:
     BOLD = '\033[1m'
     END = '\033[0m'
 
+class Command:
+    def __init__(self, func, command, desc, help) -> None:
+        self.func = func
+        self.command = command
+        self.desc = desc
+        self.help = help
+
 class GroupGenerator:
     def __init__(self) -> None:
         self.saver = Saver()
 
         self.entries = []
         self.group_size = 1
-        self.groups = []
+        self.groups = [],[]
 
     KEY_FUNC = 0
     KEY_COMMAND = 1
     KEY_DESC = 2
     KEY_HELP = 3
 
+
+    def add(self, args = []):
+        for name in args:
+            self.entries.append(name)
+        
+
+    def remove(self, args = []):
+        if args[0] in ['all']:
+                self.entries = []
+                return
+
+        for name in args:
+            self.entries.remove(name)
+            print(f"\t{text.BLUE}{name}{text.END}")
+
+    def sizeset(self, args = 2):
+        try:
+            self.group_size = abs(int(args[0]))
+            return self.group_size
+        except:
+            return None
+        
+
+    def gengroup(self, args = None):
+        groups = []
+        entries = self.entries.copy()
+        
+        while len(entries)>=self.group_size or self.group_size == 0:
+            group = random.sample(entries, self.group_size)
+            groups.append(group)
+            [entries.remove(entry) for entry in group]
+        
+        if not len(groups)>0:
+            return None, entries
+
+        self.groups = groups.copy(), entries.copy()
+        self.saver.save(f"result {datetime.now().strftime('%Y-%m-%d [%H-%M-%S]')}.json", {"groups": groups, "Rest Group": entries})
+        return groups, entries
+    
+    def qlist(self, args = None):
+        return self.entries, self.group_size, self.groups
+
+    def save(self, args = datetime.now().strftime('%Y-%m-%d [%H-%M-%S]')):
+        if args[0]:
+            name = f"{args[0]}.json"
+            content = {"size": self.group_size, "entries": self.entries}
+            self.saver.save(name, content)
+            return name
+        else:
+            return None
+
+    def load(self, args = None):
+        if args:
+            name = f"{args[0]}.json"
+            data = self.saver.load(name)
+            self.entries = data['entries']
+            self.group_size = data['size']
+            return name, {self.entries, self.group_size}
+        else:
+            return None
+
+class gui:
+    def __init__(self, groupgenerator: GroupGenerator) -> None:
+        self.gg = groupgenerator
+
+    def main(self):
+        main_loop_active = True
+        while (main_loop_active):
+            
+            for command in self.commands:
+                #print(f"{text.CYAN}[{command[self.KEY_COMMAND][0]}] {text.BLUE}{command[self.KEY_DESC]}{text.END}")
+                print(f"{text.CYAN}[{self.commands.index(command)}] {text.BLUE}{command[self.KEY_DESC]}{text.END}")
+
+            qinput = input(f"{text.YELLOW}> "); print(text.END)
+            qinput = qinput.split(' ')
+
+            for command in self.commands:
+                if qinput[0] in command[self.KEY_COMMAND] or qinput[0] == str(self.commands.index(command)):
+                    command[self.KEY_FUNC](self, qinput[1:])
 
     def add(self, args = None):
         print(f"{text.CYAN}Add:{text.END}")
@@ -148,23 +234,13 @@ class GroupGenerator:
         [help, ['help','?','h'], "Help", "Display Commands"],
     ]
 
-    def main(self):
-        main_loop_active = True
-        while (main_loop_active):
-            
-            for command in self.commands:
-                #print(f"{text.CYAN}[{command[self.KEY_COMMAND][0]}] {text.BLUE}{command[self.KEY_DESC]}{text.END}")
-                print(f"{text.CYAN}[{self.commands.index(command)}] {text.BLUE}{command[self.KEY_DESC]}{text.END}")
 
-            qinput = input(f"{text.YELLOW}> "); print(text.END)
-            qinput = qinput.split(' ')
 
-            for command in self.commands:
-                if qinput[0] in command[self.KEY_COMMAND] or qinput[0] == str(self.commands.index(command)):
-                    command[self.KEY_FUNC](self, qinput[1:])
+    
 
-gr = GroupGenerator()
+gg = GroupGenerator()
+GUI = gui(gg)
 try:
-    gr.main()
+    GUI.main()
 except KeyboardInterrupt:
     exit(1)
