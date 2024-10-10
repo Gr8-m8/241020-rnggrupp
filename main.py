@@ -98,13 +98,15 @@ class gui:
         groups, entries = self.gg.gengroup(filename, filetype)
         print(f"{text.CYAN}Generate:{text.END}")
         
+        #delimiter = f"{text.END}, {text.UNDERLINE}{text.CYAN}"
+        delimiter = f"\n\t\t"
         if groups:
             for group in groups:
-                print(f"\tGroup {groups.index(group)}: {text.BLUE}{group}{text.END}")
+                print(f"\t{text.BLUE}Group {groups.index(group)}: {delimiter}{delimiter.join(group)}{text.END}")
         else:
             print(f"No groups generated")
         
-        print(f"{text.RED}Rest group:\n\t{text.BLUE}{entries}{text.END}")
+        print(f"\t{text.RED}Rest group:{delimiter}{delimiter.join(entries)}{text.END}")
     
     def qlist(self, args = None):
         entries, group_size, groups = self.gg.qlist()
@@ -143,7 +145,7 @@ class gui:
         Command(qexit, ['exit','x','e'], "Exit", f"Exit Application"),
         Command(qlist, ['list','l', '='], "List", f"Lists List, Size, Last Group Generation"),
         Command(add, ['add','+','a'], "Add Person", f"Add Person to List {text.YELLOW}[PERSON PERSON PERSON ...]{text.END}"),
-        Command(remove, ['remove','-','r'], "Remove Person", f"Remove Person from List {text.YELLOW}[PERSON PERSON PERSON ...]{text.END}"),
+        Command(remove, ['remove','-','r'], "Remove Person", f"Remove Person from List {text.YELLOW}[PERSON PERSON PERSON ...]{text.END} OR {text.YELLOW}[ALL]{text.END}"),
         Command(sizeset, ['size','s'], "Set Group Size", f"Set Size for generated groups {text.YELLOW}[SIZE]{text.END}"),
         Command(gengroup, ['gen','*','g'], "Generate Group List", f"Generate groups by List and Size{text.END} OPTIONAL {text.YELLOW}[OUTPUTFILENAME FILETYPE]{text.END} OR {text.YELLOW}[OUTPUTFILENAME.FILETYPE]{text.END}"),
         Command(save, ['save'], "Save instance", f"Save current List and Size to File {text.YELLOW}[FILENAME FILETYPE]{text.END} OR {text.YELLOW}[FILENAME.FILETYPE]{text.END} (valid FILETYPE is 'csv' OR 'json')"),
