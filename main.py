@@ -54,8 +54,7 @@ class gui:
         
         filename, filetype = self.filenamefiletype(names_in, force=False)
         if filename and filetype:
-            if filetype == self.gg.saver.KEY_FILETYPE_CSV:
-                names_in = self.gg.saver.CSVloadList(filename)
+            names_in = self.gg.saver.loadList(filename, filetype)
         
         print(f"{text.CYAN}Add:{text.END}")
         names_out = self.gg.add(names_in)

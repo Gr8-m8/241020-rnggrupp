@@ -11,7 +11,7 @@ class Saver:
 
     KEY_FILETYPE_JSON = 'json'
     KEY_FILETYPE_CSV = 'csv'
-    #KEY_FILETYPE_EXCELL = 'xlsx'
+    KEY_FILETYPE_EXCEL = 'xlsx'
 
     KEY_CONTENT_ENTRIES = 'entries'
     KEY_CONTENT_SIZE = 'size'
@@ -113,13 +113,26 @@ class Saver:
                 if row[0] == self.KEY_CONTENT_GROUPREST:
                     restgroup = row[1:]
         return entries, size, [groups, restgroup]
-
-    def CSVloadList(self, name):
+    
+    def loadList(self, filename, filetype):
         entries = []
-        path = f"{Saver.PATH}{name}.{Saver.KEY_FILETYPE_CSV}"
+        path = f"{Saver.PATH}{filename}.{filetype}"
         if not os.path.isfile(path):
-            print(f"FILE {path}")
+            print(f"FAILED: FILE {path}")
             return entries
+        else:
+            print(f"FILE {path}")
+
+        if filetype == Saver.KEY_FILETYPE_CSV:
+            return self.CSVloadList(path)
+        
+        return entries
+        #if filetype == Saver.KEY_FILETYPE_EXCEL:
+        #    return self.EXCELloadList(path)
+
+
+    def CSVloadList(self, path):
+        entries = []
         with open(path, "r", newline='') as savefile:
             reader = csv.DictReader(savefile, delimiter=',', quotechar='|')
             headers = reader.fieldnames
@@ -131,3 +144,10 @@ class Saver:
                     except: pass
                     entries.append(f"'{name}'")
         return entries
+
+    def EXCELloadList(self, path):
+        entries = []
+        savefile = open(path, "r")
+        content = savefile.readlines()
+        savefile.close()
+        print(content)
