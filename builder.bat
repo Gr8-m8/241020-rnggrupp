@@ -1,1 +1,1 @@
-py -m PyInstaller --onefile main.py -n "GroupRNG" --collect-submodules "saver.py"
+py -m PyInstaller --onefile main.py -n "GroupRNG" --collect-submodules "generator.py" --collect-submodules "saver.py" --collect-submodules "textdecoration.py"
