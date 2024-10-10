@@ -116,7 +116,11 @@ class Saver:
 
     def CSVloadList(self, name):
         entries = []
-        with open(Saver.PATH+name+".csv", "r", newline='') as savefile:
+        path = f"{Saver.PATH}{name}.{Saver.KEY_FILETYPE_CSV}"
+        if not os.path.isfile(path):
+            print(f"FILE {path}")
+            return entries
+        with open(path, "r", newline='') as savefile:
             reader = csv.DictReader(savefile, delimiter=',', quotechar='|')
             headers = reader.fieldnames
             närvaro = ['x', 'X']
@@ -125,23 +129,5 @@ class Saver:
                     name = row[headers[0]] 
                     try: name += f" {row[headers[1]]}"
                     except: pass
-                    entries.append(name)
-        return entries
-
-        with open(Saver.PATH+name+".csv", "r", newline='') as savefile:
-            reader = csv.reader(savefile, delimiter=' ', quotechar='|')
-            närvaro = ['x', 'X']
-            for row in reader:
-                data = row[0].split(',')
-                print(data[0], end=" ")
-                try:print(data[1], end=" ")
-                except:print("data[1]")
-                try:print(data[-1], " ")
-                except:print("data[-1]")
-                print()
-                #print(f"{data[0]} {data[0]}: {data[-1]}")
-                #print(f"0:{data[0]+data[1]}: 1:{data[-1]}:, row")
-                if row[-1] in närvaro:
-                    entries.append(row[0]+row[1])
-
+                    entries.append(f"'{name}'")
         return entries
