@@ -1,5 +1,6 @@
 import json
 import os
+import csv
 
 #simplify json save/load
 class Saver:
@@ -8,34 +9,116 @@ class Saver:
     
     PATH = "data/"
 
-    def save(self, path, content):
-        try:
-            open(Saver.PATH+path, "x")
-        except:
-            pass
+    KEY_FILETYPE_JSON = 'json'
+    KEY_FILETYPE_CSV = 'csv'
+    #KEY_FILETYPE_EXCELL = 'xlsx'
 
+    KEY_CONTENT_ENTRIES = 'entries'
+    KEY_CONTENT_SIZE = 'size'
+    KEY_CONTENT_GROUPS = 'groups'
+    KEY_CONTENT_GROUP = 'group'
+    KEY_CONTENT_GROUPREST = 'restgroup'
+
+    @staticmethod
+    def FileTypes():
+        return Saver.KEY_FILETYPE_JSON+Saver.KEY_FILETYPE_CSV
+
+    def save(self, filename, filetype, content):
+        if (filetype in self.FileTypes()):
+            if (not os.path.isfile(f"{Saver.PATH}{filename}.{filetype}")):
+                open(f"{Saver.PATH}{filename}.{filetype}", "x")
+        else:
+            print(f"filetype: '{filetype}' not supported")
+            return False
+
+        if filetype == Saver.KEY_FILETYPE_JSON:
+            return self.JSONsave(f"{filename}.{filetype}", content)
+        
+        if filetype == Saver.KEY_FILETYPE_CSV:
+            return self.CSVsave(f"{filename}.{filetype}", content)
+        
+        return False
+    
+    def load(self, filename, filetype):
+        if not os.path.isfile(f"{Saver.PATH}{filename}.{filetype}"):
+            return None
+
+        if filetype == Saver.KEY_FILETYPE_JSON:
+            return self.JSONload(f"{filename}.{filetype}")
+        
+        if filetype == Saver.KEY_FILETYPE_CSV:
+            return self.CSVload(f"{filename}.{filetype}")
+        return None
+
+    def JSONsave(self, name, content):
         try:
-            save_file = open(Saver.PATH+path, "w")
+            save_file = open(Saver.PATH+name, "w")
             save_file.write(json.dumps(content))
             save_file.close()
-            print(f"Content: '{content}', saved to file '{path}'")
+            print(f"'{content}' --> '{name}'")
+            return True
         except:
-            print(f"Failed: Content: '{content}', saved to file '{path}'")
-            pass
+            print(f"'{content}' -X-> '{name}'")
+            return False
 
-    def load(self, path):
+    def JSONload(self, name):
         content = None
         try:
-            save_file = open(Saver.PATH+path, "r")
+            save_file = open(Saver.PATH+name, "r")
             content = json.loads(save_file.read())
             save_file.close()
-            print(f"Content: '{content}', loaded from file '{path}'")
         except:
-            try:
-                open(Saver.PATH+path, "x")
-                print(f"file {path} created")
-            except:
-                print(f"Failed: file {path} created")
-                pass
+            return content
+        
+        entries = content[Saver.KEY_CONTENT_ENTRIES]
+        group_size = content[Saver.KEY_CONTENT_SIZE]
+        groupcontent = content[Saver.KEY_CONTENT_GROUPS]
+        groups = [v for k,v in groupcontent.items()]
+        groups.remove(groups[-1])
+        restgroup = groupcontent[Saver.KEY_CONTENT_GROUPREST]
+        return entries, group_size, [groups, restgroup]
             
-        return content
+    def CSVsave(self, name, content: dict):
+        with open(Saver.PATH+name, 'w', newline='') as savefile:        
+            fieldnames = [content.keys()]
+            fieldnames += [content[Saver.KEY_CONTENT_GROUPS].keys()]
+            writer = csv.writer(savefile, delimiter=' ', quotechar='|', quoting=csv.QUOTE_MINIMAL)
+
+            row = [Saver.KEY_CONTENT_ENTRIES]+content[Saver.KEY_CONTENT_ENTRIES]
+            writer.writerow(row)
+            row = [Saver.KEY_CONTENT_SIZE]+[content[Saver.KEY_CONTENT_SIZE]]
+            writer.writerow(row)
+            groups = content[Saver.KEY_CONTENT_GROUPS]
+            for id, group in groups.items():
+                if not id == Saver.KEY_CONTENT_GROUPREST:
+                    row = [id]+group
+                    writer.writerow(row)
+            row = [Saver.KEY_CONTENT_GROUPREST]+groups[Saver.KEY_CONTENT_GROUPREST]
+            writer.writerow(row)
+            
+    def CSVload(self, name):
+        entries = None
+        size = None
+        groups = []
+        restgroup = None
+        with open(Saver.PATH+name, newline='') as savefile:
+            reader = csv.reader(savefile, delimiter=" ", quotechar="|")
+            for row in reader:
+                if row[0] == self.KEY_CONTENT_ENTRIES:
+                    entries = row[1:]
+                if row[0] == self.KEY_CONTENT_SIZE:
+                    size = int(row[1])
+                if row[0].startswith(self.KEY_CONTENT_GROUP):
+                    groups.append(row[1:])
+                if row[0] == self.KEY_CONTENT_GROUPREST:
+                    restgroup = row[1:]
+        return entries, size, [groups, restgroup]
+
+    def CSVloadList(self, name):
+        entries = []
+        with open(Saver.PATH+name, newline='') as savefile:
+            reader = csv.DictReader(savefile, delimiter=' ', quotechar='|')
+
+            for row in reader:
+                if row[-1] == 'X':
+                    entries.append(row['Namn'])
