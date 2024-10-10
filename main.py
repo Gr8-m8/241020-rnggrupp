@@ -12,6 +12,25 @@ class gui:
     def __init__(self, groupgenerator: GroupGenerator) -> None:
         self.gg = groupgenerator
 
+    def filenamefiletype(self, args, force=True):
+        filename = None
+        filetype = None
+        if not args:
+            if force:
+                filename = f"{input("Set File Name\n> ")}"
+                filetype = f"{input("Set File Type\n> ")}"
+        else:
+            try: filetype = args[1] 
+            except: filetype = None
+            try: 
+                filename = args[0]
+                if len(filename.split('.'))>1:
+                    filetype = filename.split('.')[1]
+                    filename = filename.split('.')[0]
+            except: filename = None
+
+        return filename, filetype
+    
     def main(self):
         main_loop_active = True
         while (main_loop_active):
@@ -32,6 +51,11 @@ class gui:
             names_in: str = [input(f"{text.YELLOW}Enter names you want to add:\n> ")]; print(text.END)
         else:
             names_in = args
+        
+        filename, filetype = self.filenamefiletype(names_in, force=False)
+        if filename and filetype:
+            if filetype == self.gg.saver.KEY_FILETYPE_CSV:
+                names_in = self.gg.saver.CSVloadList(filename)
         
         print(f"{text.CYAN}Add:{text.END}")
         names_out = self.gg.add(names_in)
@@ -70,7 +94,8 @@ class gui:
             print(f"{text.RED}Invalid Input: {group_size_in}{text.END}")
 
     def gengroup(self, args = None):
-        groups, entries = self.gg.gengroup()
+        filename, filetype = self.filenamefiletype(args, force=False)
+        groups, entries = self.gg.gengroup(filename, filetype)
         print(f"{text.CYAN}Generate:{text.END}")
         
         if groups:
@@ -92,24 +117,6 @@ class gui:
     def qexit(self, args = None):
         print(f"{text.PURPLE}Exit:{text.END}")
         exit(0)
-
-    def filenamefiletype(self, args):
-        filename = None
-        filetype = None
-        if not args:
-            filename = f"{input("Set File Name\n> ")}"
-            filetype = f"{input("Set File Type\n> ")}"
-        else:
-            try: filetype = args[1] 
-            except: filetype = None
-            try: 
-                filename = args[0]
-                if len(filename.split('.'))>1:
-                    filetype = filename.split('.')[1]
-                    filename = filename.split('.')[0]
-            except: filename = None
-
-        return filename, filetype
 
     def save(self, args = None):
         filename, filetype = self.filenamefiletype(args)
@@ -133,15 +140,15 @@ class gui:
         print()
     
     commands = [
-        Command(qexit, ['exit','x','e'], "Exit", "Exit Application"),
-        Command(qlist, ['list','l', '='], "List", "Lists List and Size"),
-        Command(add, ['add','+','a'], "Add Person", "Add Person to List [PERSON, PERSON, PERSON...]"),
-        Command(remove, ['remove','-','r'], "Remove Person", "Remove Person from List [PERSON, PERSON, PERSON...]"),
-        Command(sizeset, ['size','s'], "Set Group Size", "Set Size for generated groups [SIZE]"),
-        Command(gengroup, ['gen','*','g'], "Generate Group List", "Generate groups by List and Size"),
-        Command(save, ['save'], "Save instance", "Save current List and Size to File [FILENAME]"),
-        Command(load, ['load'], "Load instance", "Load List and Size from File [FILENAME]"),
-        Command(help, ['help','?','h'], "Help", "Display Commands"),
+        Command(qexit, ['exit','x','e'], "Exit", f"Exit Application"),
+        Command(qlist, ['list','l', '='], "List", f"Lists List, Size, Last Group Generation"),
+        Command(add, ['add','+','a'], "Add Person", f"Add Person to List {text.YELLOW}[PERSON PERSON PERSON ...]{text.END}"),
+        Command(remove, ['remove','-','r'], "Remove Person", f"Remove Person from List {text.YELLOW}[PERSON PERSON PERSON ...]{text.END}"),
+        Command(sizeset, ['size','s'], "Set Group Size", f"Set Size for generated groups {text.YELLOW}[SIZE]{text.END}"),
+        Command(gengroup, ['gen','*','g'], "Generate Group List", f"Generate groups by List and Size{text.END} OPTIONAL {text.YELLOW}[OUTPUTFILENAME FILETYPE]{text.END} OR {text.YELLOW}[OUTPUTFILENAME.FILETYPE]{text.END}"),
+        Command(save, ['save'], "Save instance", f"Save current List and Size to File {text.YELLOW}[FILENAME FILETYPE]{text.END} OR {text.YELLOW}[FILENAME.FILETYPE]{text.END} (valid FILETYPE is 'csv' OR 'json')"),
+        Command(load, ['load'], "Load instance", f"Load List and Size from File {text.YELLOW}[FILENAME FILETYPE]{text.END} OR {text.YELLOW}[FILENAME.FILETYPE]{text.END} (valid FILETYPE is 'csv' OR 'json')"),
+        Command(help, ['help','?','h'], "Help", f"Display Commands"),
     ]
 
 
