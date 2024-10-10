@@ -21,7 +21,7 @@ class Saver:
 
     @staticmethod
     def FileTypes():
-        return Saver.KEY_FILETYPE_JSON+Saver.KEY_FILETYPE_CSV
+        return [Saver.KEY_FILETYPE_JSON]+[Saver.KEY_FILETYPE_CSV]
 
     def save(self, filename, filetype, content):
         if (filetype in self.FileTypes()):
