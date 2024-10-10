@@ -17,8 +17,10 @@ class gui:
         filetype = None
         if not args:
             if force:
-                filename = f"{input("Set File Name\n> ")}"
-                filetype = f"{input("Set File Type\n> ")}"
+                print(text.YELLOW)
+                filename = f"{input(f"Set File Name\n> ")}"
+                filetype = f"{input(f"Set File Type\n> ")}"
+                print(text.END)
         else:
             try: filetype = args[1] 
             except: filetype = None
@@ -29,12 +31,15 @@ class gui:
                     filename = filename.split('.')[0]
             except: filename = None
 
+        if not filetype in self.gg.saver.FileTypes():
+            filetype = None
+
         return filename, filetype
     
     def main(self):
         main_loop_active = True
         while (main_loop_active):
-            
+            print()
             for command in self.commands[1:]:
                 print(f"{text.CYAN}[{self.commands.index(command)}] {text.BLUE}{command.desc}{text.END}")
             print(f"{text.CYAN}[{self.commands.index(self.commands[0])}] {text.BLUE}{self.commands[0].desc}{text.END}")
@@ -58,9 +63,7 @@ class gui:
         
         print(f"{text.CYAN}Add:{text.END}")
         names_out = self.gg.add(names_in)
-        print(f"\t{text.BLUE}{names_out}{text.END}") 
-        #for name in names_out.split(' '):
-        #    print(f"\t{text.BLUE}{name}{text.END}") 
+        print(f"{text.BLUE}{names_out}{text.END}") 
         
 
     def remove(self, args = None):
@@ -72,7 +75,7 @@ class gui:
         print(f"{text.CYAN}Remove:{text.END}")
         names_out, namesNo_out = self.gg.remove(names_in)
         for name in names_out.split(' '):
-            print(f"\t{text.BLUE}{name}{text.END}")
+            print(f"{text.BLUE}{name}{text.END}")
 
         if namesNo_out != "" and len(namesNo_out.split(' '))>0:
             print(f"{text.RED}Names are not in list")
@@ -88,35 +91,39 @@ class gui:
         group_size_out = self.gg.sizeset(group_size_in)
         if group_size_out:
             print(f"{text.CYAN}Size:{text.END}")
-            print(f"\t{text.BLUE}{group_size_out}{text.END}")
+            print(f"{text.BLUE}{group_size_out}{text.END}")
         else:
             print(f"{text.RED}Invalid Input: {group_size_in}{text.END}")
 
     def gengroup(self, args = None):
         filename, filetype = self.filenamefiletype(args, force=False)
         groups, entries = self.gg.gengroup(filename, filetype)
-        print(f"{text.CYAN}Generate:{text.END}")
         
-        #delimiter = f"{text.END}, {text.UNDERLINE}{text.CYAN}"
-        delimiter = f"\n\t\t"
+        tag1 = f"{text.END}\n|- {text.GREEN}"
+        print(f"{text.CYAN}Generate:{text.END}")
         if groups:
             for group in groups:
-                print(f"\t{text.BLUE}Group {groups.index(group)}: {delimiter}{delimiter.join(group)}{text.END}")
+                print(f"{text.BLUE}Group {groups.index(group)+1}: {tag1}{tag1.join(group)}{text.END}")
         else:
             print(f"No groups generated")
         
-        print(f"\t{text.RED}Rest group:{delimiter}{delimiter.join(entries)}{text.END}")
+        print(f"{text.RED}Rest group:{tag1}{tag1.join(entries)}{text.END}")
     
     def qlist(self, args = None):
         entries, group_size, groups = self.gg.qlist()
+        try: groupsrest = groups[1]
+        except: groupsrest = entries
+        groups = groups[0]
+
+        tag1 = f"{text.END}\n|- {text.BLUE}"
+        tag2 = f"{text.END}\n:  |- {text.GREEN}"
         print(f"{text.CYAN}List:{text.END}")
-        print(f"\t{text.BLUE}Persons: {", ".join(entries)}{text.END}")
-        print(f"\t{text.BLUE}Group Size: {group_size}{text.END}")
-        print(f"\t{text.BLUE}Latest Groups:{" ".join([f"\n\t\tGroup {groups[0].index(group)}: {", ".join(group)}" for group in groups[0]])}\n\t\tRest Group: {", ".join(groups[1])}{text.END}")
-        print()
+        print(f"{text.BLUE}Persons: {f"{tag1}{text.GREEN}"}{f"{tag1}{text.GREEN}".join(entries)}{text.END}")
+        print(f"{text.BLUE}Group Size: {text.GREEN}{group_size}{text.END}")
+        print(f"{text.BLUE}Latest Groups:{" ".join([f"{tag1}Group {groups.index(group)+1}: {tag2}{tag2.join(group)}" for group in groups])}{tag1}Rest Group: {tag2}{tag2.join(groupsrest)}{text.END}")
 
     def qexit(self, args = None):
-        print(f"{text.PURPLE}Exit:{text.END}")
+        print(f"{text.PURPLE}Exit.{text.END}")
         exit(0)
 
     def save(self, args = None):
@@ -158,4 +165,6 @@ GUI = gui(gg)
 try:
     GUI.main()
 except KeyboardInterrupt:
+    print()
+    GUI.qexit()
     exit(1)
