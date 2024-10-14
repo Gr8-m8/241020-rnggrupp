@@ -111,7 +111,7 @@ class gui:
         print(f"{text.RED}Rest group:{tag1}{tag1.join(entries)}{text.END}")
     
     def qlist(self, args = None):
-        entries, group_size, groups = self.gg.qlist()
+        entries, group_size, groups, datafiles = self.gg.qlist()
         try: groupsrest = groups[1]
         except: groupsrest = entries
         groups = groups[0]
@@ -119,10 +119,10 @@ class gui:
         tag1 = f"{text.END}\n|- {text.BLUE}"
         tag2 = f"{text.END}\n:  |- {text.GREEN}"
         print(f"{text.CYAN}List:{text.END}")
-        print(f"{text.BLUE}Persons: {f"{tag1}{text.GREEN}"}{f"{tag1}{text.GREEN}".join(entries)}{text.END}")
+        print(f"{text.BLUE}Persons: {f"{tag1}{text.GREEN}"}{f"{tag1}{text.GREEN}".join(entries) if entries else f"{text.RED}None"}{text.END}")
         print(f"{text.BLUE}Group Size: {text.GREEN}{group_size}{text.END}")
-        print(f"{text.BLUE}Latest Groups:{" ".join([f"{tag1}Group {groups.index(group)+1}: {tag2}{tag2.join(group)}" for group in groups])}{tag1}Rest Group: {tag2}{tag2.join(groupsrest)}{text.END}")
-        print(f"{text.BLUE}DataFiles: {f"{tag1}{text.GREEN}"}{f"{tag1}{text.GREEN}".join(self.gg.saver.DataFiles())}")
+        print(f"{text.BLUE}Latest Groups:{" ".join([f"{tag1}Group {groups.index(group)+1}: {tag2}{tag2.join(group)}" for group in groups]) if groups else f"{tag1}{text.RED}None"}{tag1}Rest Group: {tag2}{tag2.join(groupsrest) if groupsrest else f"{text.RED}None"}{text.END}")
+        print(f"{text.BLUE}DataFiles: {f"{tag1}{text.GREEN}"}{f"{tag1}{text.GREEN}".join(datafiles) if datafiles else f"{text.RED}None"}")
 
     def qexit(self, args = None):
         print(f"{text.PURPLE}Exit.{text.END}")

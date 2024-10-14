@@ -76,7 +76,7 @@ class GroupGenerator:
         return groups, entries
     
     def qlist(self) -> tuple:
-        return self.entries, self.group_size, self.groups
+        return self.entries, self.group_size, self.groups, self.saver.DataFiles()
 
     def save(self, filename = datetime.now().strftime('%Y-%m-%d [%H-%M-%S]'), filetype = Saver.KEY_FILETYPE_CSV) -> str:
         if filetype:
