@@ -150,12 +150,12 @@ class gui:
     commands = [
         Command(qexit, ['x','e', 'q', 'exit',], "Exit", f"Exit Application"),
         Command(qlist, ['!', 'list',], "List", f"Lists List, Size, Last Group Generation"),
-        Command(add, ['+', 'add',], "Add Person", f"Add Person to List {text.YELLOW}[PERSON PERSON PERSON ...]{text.END}"),
-        Command(remove, ['-','remove','rem'], "Remove Person", f"Remove Person from List {text.YELLOW}[PERSON PERSON PERSON ...]{text.END} OR {text.YELLOW}[ALL]{text.END}"),
-        Command(sizeset, ['=', '#','size',], "Set Group Size", f"Set Size for generated groups {text.YELLOW}[SIZE]{text.END}"),
-        Command(gengroup, ['*','generate','gen',], "Generate Group List", f"Generate groups by List and Size{text.END} OPTIONAL {text.YELLOW}[OUTPUTFILENAME FILETYPE]{text.END} OR {text.YELLOW}[OUTPUTFILENAME.FILETYPE]{text.END}"),
-        Command(save, ['s','>>', 'save',], "Save instance", f"Save current List and Size to File {text.YELLOW}[FILENAME FILETYPE]{text.END} OR {text.YELLOW}[FILENAME.FILETYPE]{text.END} (valid FILETYPE is 'csv' OR 'json')"),
-        Command(load, ['l','<<', 'load',], "Load instance", f"Load List and Size from File {text.YELLOW}[FILENAME FILETYPE]{text.END} OR {text.YELLOW}[FILENAME.FILETYPE]{text.END} (valid FILETYPE is 'csv' OR 'json')"),
+        Command(add, ['+', 'add',], "Add Person", f"Add Person to List {text.END} ARGS: {text.YELLOW}[PERSON PERSON PERSON ...]{text.END} OR {text.YELLOW}[FILENAME FILETYPE]{text.END} OR {text.YELLOW}[FILENAME.FILETYPE]{text.END} (valid FILETYPE is 'csv')"),
+        Command(remove, ['-','remove','rem'], "Remove Person", f"Remove Person from List {text.END} ARGS: {text.YELLOW}[PERSON PERSON PERSON ...]{text.END} OR {text.YELLOW}[ALL]{text.END}"),
+        Command(sizeset, ['=', '#','size',], "Set Group Size", f"Set Size for generated groups {text.END} ARGS: {text.YELLOW}[SIZE]{text.END}"),
+        Command(gengroup, ['*','generate','gen',], "Generate Group List", f"Generate groups by List and Size{text.END} OPTIONAL ARGS: {text.YELLOW}[OUTPUTFILENAME FILETYPE]{text.END} OR {text.YELLOW}[OUTPUTFILENAME.FILETYPE]{text.END}"),
+        Command(save, ['s','>>', 'save',], "Save instance", f"Save current List and Size to File {text.END} ARGS: {text.YELLOW}[FILENAME FILETYPE]{text.END} OR {text.YELLOW}[FILENAME.FILETYPE]{text.END} (valid FILETYPE is 'csv' OR 'json')"),
+        Command(load, ['l','<<', 'load',], "Load instance", f"Load List and Size from File {text.END} ARGS: {text.YELLOW}[FILENAME FILETYPE]{text.END} OR {text.YELLOW}[FILENAME.FILETYPE]{text.END} (valid FILETYPE is 'csv' OR 'json')"),
         Command(help, ['?', 'help','h',], "Help", f"Display Commands"),
     ]
 
