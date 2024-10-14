@@ -2,9 +2,10 @@ from generator import GroupGenerator
 from textdecoration import textdecoration as text
 
 class Command:
-    def __init__(self, func, command: list, desc: str, help: str) -> None:
+    def __init__(self, func, command: list, desc: str, help: str, argsdesc: str = "") -> None:
         self.func = func
         self.command = command
+        self.argsdesc = argsdesc
         self.desc = desc
         self.help = help
 
@@ -144,18 +145,17 @@ class gui:
 
     def help(self, args = None):
         for command in self.commands:
-            print(f"{text.CYAN}{command.desc}: {text.BLUE}{command.command} {text.GREEN}{command.help}{text.END}")
-        print()
+            print(f"{text.BLUE}{command.desc}:{text.END}\n|- {text.GREEN}{command.help}{text.END}\n|- Commands: {text.CYAN}{f" {text.END}OR{text.CYAN} ".join([f"'{command}'" for command in command.command])}{text.END} {command.argsdesc}{text.END}")
     
     commands = [
         Command(qexit, ['x','e', 'q', 'exit',], "Exit", f"Exit Application"),
         Command(qlist, ['!', 'list',], "List", f"Lists List, Size, Last Group Generation"),
-        Command(add, ['+', 'add',], "Add Person", f"Add Person to List {text.END} ARGS: {text.YELLOW}[PERSON PERSON PERSON ...]{text.END} OR {text.YELLOW}[FILENAME FILETYPE]{text.END} OR {text.YELLOW}[FILENAME.FILETYPE]{text.END} (valid FILETYPE is 'csv')"),
-        Command(remove, ['-','remove','rem'], "Remove Person", f"Remove Person from List {text.END} ARGS: {text.YELLOW}[PERSON PERSON PERSON ...]{text.END} OR {text.YELLOW}[ALL]{text.END}"),
-        Command(sizeset, ['=', '#','size',], "Set Group Size", f"Set Size for generated groups {text.END} ARGS: {text.YELLOW}[SIZE]{text.END}"),
-        Command(gengroup, ['*','generate','gen',], "Generate Group List", f"Generate groups by List and Size{text.END} OPTIONAL ARGS: {text.YELLOW}[OUTPUTFILENAME FILETYPE]{text.END} OR {text.YELLOW}[OUTPUTFILENAME.FILETYPE]{text.END}"),
-        Command(save, ['s','>>', 'save',], "Save instance", f"Save current List and Size to File {text.END} ARGS: {text.YELLOW}[FILENAME FILETYPE]{text.END} OR {text.YELLOW}[FILENAME.FILETYPE]{text.END} (valid FILETYPE is 'csv' OR 'json')"),
-        Command(load, ['l','<<', 'load',], "Load instance", f"Load List and Size from File {text.END} ARGS: {text.YELLOW}[FILENAME FILETYPE]{text.END} OR {text.YELLOW}[FILENAME.FILETYPE]{text.END} (valid FILETYPE is 'csv' OR 'json')"),
+        Command(add, ['+', 'add',], "Add Person", f"Add Person to List", f"ARGS: {text.YELLOW}[PERSON PERSON PERSON ...]{text.END} OR {text.YELLOW}[FILENAME FILETYPE]{text.END} OR {text.YELLOW}[FILENAME.FILETYPE]{text.END} {text.GREEN}valid FILE if FILETYPE is 'csv' AND FILELOCATION is 'data/'{text.END}"),
+        Command(remove, ['-','remove','rem'], "Remove Person", f"Remove Person from List", f"ARGS: {text.YELLOW}[PERSON PERSON PERSON ...]{text.END} OR {text.YELLOW}[ALL]{text.END}"),
+        Command(sizeset, ['=', '#','size',], "Set Group Size", f"Set Size for generated groups", f"ARGS: {text.YELLOW}[SIZE]{text.END}"),
+        Command(gengroup, ['*','generate','gen',], "Generate Group List", f"Generate groups by List and Size", f"OPTIONAL ARGS: {text.YELLOW}[OUTPUTFILENAME FILETYPE]{text.END} OR {text.YELLOW}[OUTPUTFILENAME.FILETYPE]{text.END} {text.GREEN}OUTPUTFILELOCATION is 'data/'{text.END}"),
+        Command(save, ['>>', 's', 'save',], "Save instance", f"Save current List and Size to File", f"ARGS: {text.YELLOW}[FILENAME FILETYPE]{text.END} OR {text.YELLOW}[FILENAME.FILETYPE]{text.END} {text.GREEN}valid FILE if FILETYPE is 'csv' OR 'json' AND FILELOCATION is 'data/'{text.END}"),
+        Command(load, ['<<', 'l', 'load',], "Load instance", f"Load List and Size from File", f"ARGS: {text.YELLOW}[FILENAME FILETYPE]{text.END} OR {text.YELLOW}[FILENAME.FILETYPE]{text.END} {text.GREEN}valid FILE if FILETYPE is 'csv' OR 'json' AND FILELOCATION is 'data/'{text.END}"),
         Command(help, ['?', 'help','h',], "Help", f"Display Commands"),
     ]
 
