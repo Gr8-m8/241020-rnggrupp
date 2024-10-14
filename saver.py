@@ -39,6 +39,9 @@ class Saver:
         
         return False
     
+    def DataFiles(self):
+        return [file for file in os.listdir(Saver.PATH) if os.path.isfile(os.path.join(Saver.PATH, file)) and file.endswith(tuple(Saver.FileTypes()))]
+    
     def load(self, filename, filetype):
         if not os.path.isfile(f"{Saver.PATH}{filename}.{filetype}"):
             return None

@@ -122,6 +122,7 @@ class gui:
         print(f"{text.BLUE}Persons: {f"{tag1}{text.GREEN}"}{f"{tag1}{text.GREEN}".join(entries)}{text.END}")
         print(f"{text.BLUE}Group Size: {text.GREEN}{group_size}{text.END}")
         print(f"{text.BLUE}Latest Groups:{" ".join([f"{tag1}Group {groups.index(group)+1}: {tag2}{tag2.join(group)}" for group in groups])}{tag1}Rest Group: {tag2}{tag2.join(groupsrest)}{text.END}")
+        print(f"{text.BLUE}DataFiles: {f"{tag1}{text.GREEN}"}{f"{tag1}{text.GREEN}".join(self.gg.saver.DataFiles())}")
 
     def qexit(self, args = None):
         print(f"{text.PURPLE}Exit.{text.END}")
@@ -149,7 +150,7 @@ class gui:
     
     commands = [
         Command(qexit, ['x','e', 'q', 'exit',], "Exit", f"Exit Application"),
-        Command(qlist, ['!', 'list',], "List", f"Lists List, Size, Last Group Generation"),
+        Command(qlist, ['!', 'list',], "List", f"Lists List, Size, Last Group Generation, Available Datafiles"),
         Command(add, ['+', 'add',], "Add Person", f"Add Person to List", f"ARGS: {text.YELLOW}[PERSON PERSON PERSON ...]{text.END} OR {text.YELLOW}[FILENAME FILETYPE]{text.END} OR {text.YELLOW}[FILENAME.FILETYPE]{text.END} {text.GREEN}valid FILE if FILETYPE is 'csv' AND FILELOCATION is 'data/'{text.END}"),
         Command(remove, ['-','remove','rem'], "Remove Person", f"Remove Person from List", f"ARGS: {text.YELLOW}[PERSON PERSON PERSON ...]{text.END} OR {text.YELLOW}[ALL]{text.END}"),
         Command(sizeset, ['=', '#','size',], "Set Group Size", f"Set Size for generated groups", f"ARGS: {text.YELLOW}[SIZE]{text.END}"),
